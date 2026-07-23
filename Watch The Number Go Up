@@ -1,0 +1,190 @@
+-- MOBILE FRIENDLY <3
+-- Open source
+
+local Fluent = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/dawid-scripts/Fluent/master/main.lua"
+))()
+
+local Window = Fluent:CreateWindow({
+    Title = "BlockHUB",
+    SubTitle = "Watch The Number Go Up",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = true,
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+local PrestigeTab = Window:AddTab({
+    Title = "Watch Number GU",
+    Icon = "trophy"
+})
+
+local LuckyTab = Window:AddTab({
+    Title = "Lucky Blocks BG",
+    Icon = "box"
+})
+
+
+-- SERVICES
+local RS = game:GetService("ReplicatedStorage")
+
+local PrestigeRemote = RS.Objects.Remotes.Prestige.DoPrestige
+local UpgradeRemote = RS.Objects.Remotes.Upgrades.BuyUpgrade
+
+
+-- PRESTIGE
+local PrestigeSection = PrestigeTab:AddSection("Prestige")
+
+PrestigeSection:AddButton({
+    Title = "Rebirth (1T MIN)",
+    Description = "Perform rebirth",
+    Callback = function()
+        PrestigeRemote:FireServer("Rebirth")
+
+        Fluent:Notify({
+            Title = "Simple Hub",
+            Content = "Rebirth executed",
+            Duration = 3
+        })
+    end
+})
+
+
+PrestigeSection:AddButton({
+    Title = "Ascend (1e700 MIN)",
+    Description = "Perform ascension",
+    Callback = function()
+        PrestigeRemote:FireServer("Ascension")
+
+        Fluent:Notify({
+            Title = "Simple Hub",
+            Content = "Ascension executed",
+            Duration = 3
+        })
+    end
+})
+
+
+-- AUTO BUY
+local UpgradeSection = PrestigeTab:AddSection("Upgrades")
+
+local AutoBuyEnabled = false
+local MaxUpgrade = 300
+
+
+local function AutoBuy()
+    task.spawn(function()
+        while AutoBuyEnabled do
+
+            for i = 1, MaxUpgrade do
+
+                if not AutoBuyEnabled then
+                    break
+                end
+
+                local upgrade =
+                    "NumMulti_" .. string.format("%03d", i)
+
+                UpgradeRemote:FireServer(upgrade)
+
+            end
+
+            task.wait(.2)
+        end
+    end)
+end
+
+
+
+UpgradeSection:AddToggle("AutoBuy", {
+    Title = "Auto Buy All Upgrades",
+    Description = "Automatically buys upgrades 001-300",
+    Default = false,
+
+    Callback = function(Value)
+
+        AutoBuyEnabled = Value
+
+        if Value then
+            AutoBuy()
+
+            Fluent:Notify({
+                Title="Simple Hub",
+                Content="Auto Buy Enabled",
+                Duration=3
+            })
+        else
+
+            Fluent:Notify({
+                Title="Simple Hub",
+                Content="Auto Buy Disabled",
+                Duration=3
+            })
+
+        end
+    end
+})
+
+
+
+-- LUCKY BLOCKS
+
+local LuckySection = LuckyTab:AddSection("Lucky Blocks")
+
+
+local Blocks = {
+    {
+        Name="Lucky Block",
+        Remote="SpawnLuckyBlock"
+    },
+    {
+        Name="Super Block",
+        Remote="SpawnSuperBlock"
+    },
+    {
+        Name="Diamond Block",
+        Remote="SpawnDiamondBlock"
+    },
+    {
+        Name="Rainbow Block",
+        Remote="SpawnRainbowBlock"
+    }
+}
+
+
+
+for _,block in ipairs(Blocks) do
+
+    LuckySection:AddButton({
+        Title="Spawn "..block.Name,
+
+        Callback=function()
+
+            local remote = RS:FindFirstChild(block.Remote)
+
+            if remote then
+                remote:FireServer()
+
+                Fluent:Notify({
+                    Title="Simple Hub",
+                    Content=block.Name.." spawned",
+                    Duration=2
+                })
+
+            end
+        end
+    })
+
+end
+
+
+
+-- SETTINGS
+Window:SelectTab(PrestigeTab)
+
+Fluent:Notify({
+    Title="$imple Hub",
+    Content="Loaded successfully",
+    Duration=5
+})
