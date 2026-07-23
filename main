@@ -1,5 +1,5 @@
 local placeid = game.PlaceId
 
 if placeid == 78491332555415 then
-    
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/VEXSCRIPTSRBLX/BlockHub/main/Watch%20The%20Number%20Go%20Up"))()
 end
